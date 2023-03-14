@@ -1,22 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ToDo app a'la Gabbenos</title>
-  </head>
-  <body>
-    <h1>Buenos Gabbenos!</h1>
-    <div id="controls">
-      <input type="text" id="new-todo" />
-      <button id="add-todo">Add</button>
+<head>
+    <meta charset="UTF-8">
+    <title>ToDo App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>ToDo App</h1>
+    <div class="input-container">
+        <input type="text" placeholder="Add a new task" id="task-input">
+        <button id="add-task-btn">Add</button>
     </div>
-    <ul id="todos">
-      <li>Learn Vite</li>
-      <li>Learn Vue</li>
-      <li>Learn Vite + Vue</li>
-    </ul>
-    <script type="module" src="/main.js"></script>
-  </body>
+    <div class="task-container">
+        <ul id="task-list"></ul>
+    </div>
+    <div class="sort-container">
+        <label for="sort">Sort by:</label>
+        <select id="sort">
+            <option value="asc">Date (oldest first)</option>
+            <option value="desc">Date (newest first)</option>
+        </select>
+    </div>
+    <script src="main.js"></script>
+</body>
 </html>
