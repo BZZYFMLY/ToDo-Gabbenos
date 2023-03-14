@@ -1,5 +1,5 @@
-import './style.css'
-import { v4 as uuid } from 'uuid';
+import {v4 as uuid} from "uuid";
+import "./style.css";
 
 let todoTasks = [];
 let fieldValue = "";
@@ -8,13 +8,6 @@ const addButton = document.getElementById("add-todo");
 
 const todoList = document.getElementById("todos");
 todoList.innerHTML = "";
-
-// const createButton = ({text, cb}) => {
-//   const button = document.createElement("button");
-//   button.textContent = text;
-//   button.addEventListener("click", cb);
-//   return button;
-// }
 
 const createTodo = ({todo, id, active}) => {
   const todoElem = `
@@ -34,78 +27,70 @@ const createTodo = ({todo, id, active}) => {
   const editBtn = todoItem.querySelector(".editBtn");
   const completeBtn = todoItem.querySelector(".completeBtn");
 
+  const createButton = ({text, cb}) => {
+    const button = document.createElement("button");
+    button.textContent = text;
+    button.addEventListener("click", cb);
+    return button;
+  };
+
   deleteBtn.addEventListener("click", (e) => {
     todoTasks = todoTasks.filter((todo) => todo.id !== id);
     todoItem.remove();
   });
 
-  editBtn.addEventListener("click", (e) => {
+  completeBtn.addEventListener("click", (e) => {
+    const todoText = e.target.parentNode.parentNode.querySelector("p");
+    todoText.classList.toggle("done");
+    const todoId = e.target.parentNode.parentNode.id;
+    todoTasks = todoTasks.map((todo) => {
+      if (todo.id === todoId) {
+        return {...todo, active: !todo.active};
+      }
+      return todo;
+    });
+    todoText.classList.toggle("completed");
+    addToStorage();
+  });
 
+  editBtn.addEventListener("click", (e) => {
+    const button = e.target;
+    const buttonContainer = e.target.parentNode;
+    const todoTextParent = e.target.parentNode.parentNode;
+    const todoText = todoTextParent.querySelector("p");
+
+    todoText.style.display = "none";
+
+    const input = document.createElement("input");
+    input.value = todoText.textContent;
+    todoTextParent.insertBefore(input, buttonContainer);
+
+    const saveButton = createButton({
+      text: "Save",
+      cb: (e) => {
+        const todoText = e.target.parentNode.parentNode.querySelector("p");
+        todoTasks = todoTasks.map((todoElem) => {
+          if (todoElem.id === e.target.parentNode.parentNode.id) {
+            return {...todoElem, todo: input.value};
+          }
+          return todoElem;
+        });
+        addToStorage();
+        todoText.textContent = input.value;
+        todoText.style.display = "inline-block";
+        button.style.display = "inline-block";
+        input.remove();
+        saveButton.remove();
+      },
+    });
+
+    buttonContainer.appendChild(saveButton);
+
+    button.style.display = "none";
+  });
 
   return todoElem;
-}
-
-  // const todoComplete = createButton({text: "Complete", cb: (e) => {
-  //   const todoText = e.target.parentNode.parentNode.querySelector("p");
-  //   todoText.classList.toggle("done");
-  //   const todoId = e.target.parentNode.parentNode.id;
-  //   todoTasks = todoTasks.map((todo) => {
-  //     if (todo.id === todoId) {
-  //       return { ...todo, active: !todo.active };
-  //     }
-  //     return todo;
-  //   });
-  //   todoText.classList.toggle("completed");
-  //   addToStorage();
-  // }});
-
-  // const todoEdit = createButton({
-  //   text: "Edit",
-  //   cb: (e) => {
-  //     const button = e.target;
-  //     const buttonContainer = e.target.parentNode;
-  //     const todoTextParent = e.target.parentNode.parentNode;
-  //     const todoText = todoTextParent.querySelector("p");
-
-  //     todoText.style.display = "none";
-
-  //     const input = document.createElement("input");
-  //     input.value = todoText.textContent;
-  //     todoTextParent.insertBefore(input, buttonContainer);
-
-  //     const saveButton = createButton({
-  //       text: "Save",
-  //       cb: (e) => {
-  //         const todoText = e.target.parentNode.parentNode.querySelector("p");
-  //         todoTasks = todoTasks.map((todoElem) => {
-  //           if (todoElem.id === e.target.parentNode.parentNode.id) {
-  //             return { ...todoElem, todo: input.value };
-  //           }
-  //           return todoElem;
-  //         });
-  //         addToStorage();
-  //         todoText.textContent = input.value;
-  //         todoText.style.display = "inline-block";
-  //         button.style.display = "inline-block";
-  //         input.remove();
-  //         saveButton.remove();
-  //       },
-  //     });
-
-  //     buttonContainer.appendChild(saveButton);
-
-  //     button.style.display = "none";
-  //   },
-  // });
-
-  // const todoDelete = createButton({
-  //   text: "Delete",
-  //   cb: (e) => {
-  //     const todoId = e.target.parentNode.parentNode.id;
-  //     todoTasks = todoTasks.filter((todo) => todo.id !== todoId);
-  //     document.getElementById(todoId).remove();
-  //   },
-  // });
+};
 
 const getFromStorage = () => {
   todoTasks = JSON.parse(localStorage.getItem("todoTasks")) ?? [];
@@ -138,6 +123,4 @@ addButton.addEventListener("click", () => {
 
 const addToStorage = () => {
   localStorage.setItem("todoTasks", JSON.stringify(todoTasks));
-}
-
-
+};
