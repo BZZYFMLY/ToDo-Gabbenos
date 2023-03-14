@@ -1,139 +1,108 @@
-import './style.css'
-import { v4 as uuid } from 'uuid';
+// Retrieve tasks from localStorage or set an empty array
+let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
-let todoTasks = [];
-let fieldValue = "";
+// DOM elements
+const taskInput = document.querySelector("#task-input");
+const addTaskBtn = document.querySelector("#add-task-btn");
+const taskList = document.querySelector("#task-list");
+const sortSelect = document.querySelector("#sort");
 
-const addButton = document.getElementById("add-todo");
-
-const todoList = document.getElementById("todos");
-todoList.innerHTML = "";
-
-const createButton = ({text, cb}) => {
-  const button = document.createElement("button");
-  button.textContent = text;
-  button.addEventListener("click", cb);
-  return button;
-}
-
-const createTodo = ({todo, id, active}) => {
-  const todoWrapper = document.createElement("li");
-  todoWrapper.id = id;
-
-  todoWrapper.classList.add("todo-item");
-
-  const todoItem = document.createElement("p");
-  !active && todoItem.classList.add("done");
-
-  const buttonWrapper = document.createElement("div");
-
-  const todoComplete = createButton({text: "Complete", cb: (e) => {
-    const todoText = e.target.parentNode.parentNode.querySelector("p");
-    todoText.classList.toggle("done");
-    const todoId = e.target.parentNode.parentNode.id;
-    todoTasks = todoTasks.map((todo) => {
-      if (todo.id === todoId) {
-        return { ...todo, active: !todo.active };
-      }
-      return todo;
-    });
-    todoText.classList.toggle("completed");
-    addToStorage();
-  }});
-
-  const todoEdit = createButton({
-    text: "Edit",
-    cb: (e) => {
-      const button = e.target;
-      const buttonContainer = e.target.parentNode;
-      const todoTextParent = e.target.parentNode.parentNode;
-      const todoText = todoTextParent.querySelector("p");
-
-      todoText.style.display = "none";
-
-      const input = document.createElement("input");
-      input.value = todoText.textContent;
-      todoTextParent.insertBefore(input, buttonContainer);
-
-      const saveButton = createButton({
-        text: "Save",
-        cb: (e) => {
-          const todoText = e.target.parentNode.parentNode.querySelector("p");
-          todoTasks = todoTasks.map((todoElem) => {
-            if (todoElem.id === e.target.parentNode.parentNode.id) {
-              return { ...todoElem, todo: input.value };
-            }
-            return todoElem;
-          });
-          addToStorage();
-          todoText.textContent = input.value;
-          todoText.style.display = "inline-block";
-          button.style.display = "inline-block";
-          input.remove();
-          saveButton.remove();
-        },
-      });
-
-      buttonContainer.appendChild(saveButton);
-
-      button.style.display = "none";
-    },
-  });
-
-  const todoDelete = createButton({
-    text: "Delete",
-    cb: (e) => {
-      const todoId = e.target.parentNode.parentNode.id;
-      todoTasks = todoTasks.filter((todo) => todo.id !== todoId);
-      document.getElementById(todoId).remove();
-    },
-  });
-
-  todoItem.textContent = todo;
-
-  todoWrapper.appendChild(todoItem);
-  buttonWrapper.appendChild(todoDelete);
-  buttonWrapper.appendChild(todoEdit);
-  buttonWrapper.appendChild(todoComplete);
-  todoWrapper.appendChild(buttonWrapper);
-  todoList.appendChild(todoWrapper);
-};
-
-const getFromStorage = () => {
-  todoTasks = JSON.parse(localStorage.getItem("todoTasks")) ?? [];
-  if (todoTasks) {
-    todoTasks.forEach((todo) => {
-      createTodo(todo);
-    });
+// Add new task to the list
+function addTask() {
+  if (!taskInput.value) {
+    return;
   }
-};
-
-getFromStorage();
-
-const textField = document.getElementById("new-todo");
-
-textField.addEventListener("change", (event) => {
-  fieldValue = event.target.value;
-});
-
-addButton.addEventListener("click", () => {
-  const id = uuid();
-
-  if (fieldValue === "") return;
-
-  const todoElem = {todo: fieldValue, id, active: true};
-
-  //TODO check the existing todos and if the new todo is already there, don't add it
-  createTodo(todoElem);
-  todoTasks.push(todoElem);
-  addToStorage();
-
-  fieldValue = "";
-  textField.value = fieldValue;
-});
-
-const addToStorage = () => {
-  localStorage.setItem("todoTasks", JSON.stringify(todoTasks));
+  const task = {
+    content: taskInput.value,
+    date: new Date().toISOString(),
+    done: false,
+  };
+  tasks.push(task);
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+  renderTasks();
+  taskInput.value = "";
 }
 
+// Mark task as done
+function toggleDone(index) {
+  tasks[index].done = !tasks[index].done;
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+  renderTasks();
+}
 
+// Delete task from the list
+function deleteTask(index) {
+  tasks.splice(index, 1);
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+  renderTasks();
+}
+
+// Edit task content
+function editTask(index) {
+  const newContent = prompt("Enter new task content:", tasks[index].content);
+  if (!newContent) {
+    return;
+  }
+  tasks[index].content = newContent;
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+  renderTasks();
+}
+
+// Render tasks to the list
+function renderTasks() {
+  // Sort tasks by date
+  const sortOrder = sortSelect.value === "asc" ? 1 : -1;
+  const sortedTasks = tasks.sort(
+    (a, b) => sortOrder * (new Date(a.date) - new Date(b.date))
+  );
+
+  // Clear task list
+  taskList.innerHTML = "";
+
+  // Render tasks to the list
+  sortedTasks.forEach((task, index) => {
+    const taskEl = document.createElement("li");
+
+    const doneBtn = document.createElement("button");
+    doneBtn.innerText = "✓";
+    doneBtn.classList.add("done-btn");
+    doneBtn.addEventListener("click", () => toggleDone(index));
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.innerText = "X";
+    deleteBtn.classList.add("delete-btn");
+    deleteBtn.addEventListener("click", () => deleteTask(index));
+
+    const editBtn = document.createElement("button");
+    editBtn.innerText = "Edit";
+    editBtn.classList.add("edit-btn");
+    editBtn.addEventListener("click", () => editTask(index));
+
+    const contentSpan = document.createElement("span");
+    contentSpan.innerText = task.content;
+    contentSpan.classList.add("content");
+
+    const dateSpan = document.createElement("span");
+    dateSpan.classList.add("date");
+    dateSpan.innerText = new Date(task.date).toLocaleDateString();
+
+    if (task.done) {
+      taskEl.classList.add("done");
+    }
+
+    taskEl.appendChild(doneBtn);
+    taskEl.appendChild(contentSpan);
+    taskEl.appendChild(dateSpan);
+    taskEl.appendChild(editBtn);
+    taskEl.appendChild(deleteBtn);
+
+    taskList.appendChild(taskEl);
+  });
+}
+
+// Add task event listener
+addTaskBtn.addEventListener("click", addTask);
+sortSelect.addEventListener("change", renderTasks);
+
+// Render tasks on page load
+renderTasks();
