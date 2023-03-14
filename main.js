@@ -1,4 +1,29 @@
+import axios from "axios";
+
+const baseurl = "https://localhost:3000/";
+
 // Retrieve tasks from localStorage or set an empty array
+const getTodos = () => {
+  axios
+    .post(baseurl + "gettodos", {
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Content-Type": "application/json",
+      },
+      withCredentials: true,
+      credentials: "same-origin",
+    })
+    .then((res) => {
+      console.log(res);
+      localStorage.setItem("tasks", JSON.stringify(res.data));
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
+getTodos();
+
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
 // DOM elements
