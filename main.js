@@ -9,6 +9,7 @@ const getTodos = () => {
       headers: {
         "Access-Control-Allow-Origin": "*",
         "Content-Type": "application/json",
+        "Access-Control-Allow-Credentials": true,
       },
       withCredentials: true,
       credentials: "same-origin",
