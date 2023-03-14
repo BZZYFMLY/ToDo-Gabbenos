@@ -1,31 +1,68 @@
 import axios from "axios";
+import postHeaders from "./src/constants/postHeaders";
 
-const baseurl = "https://localhost:3000/";
+const todosStorageKey = "todos";
+const getTodosEndpoint = "gettodos";
+const addTodoEndpoint = "addtodo";
+const deleteTodoEndpoint = "deletetodo";
+const updateTodoEndpoint = "updatetodo";
+
+const baseurl = "http://localhost:3000/";
+
+const saveToStorage = (key, value) => {
+  localStorage.setItem(key, JSON.stringify(value));
+}; // Save tasks to localStorage
+
+const loadFromStorage = (key) => {
+  const data = localStorage.getItem(key);
+  return data ? JSON.parse(data) : [];
+}; // Retrieve tasks from localStorage or set an empty array
+
+const loadTodosFromStorage = () => {
+  return loadFromStorage(todosStorageKey);
+};
+
+const saveTodosToStorage = (tasks) => {
+  saveToStorage(todosStorageKey, tasks);
+};
 
 // Retrieve tasks from localStorage or set an empty array
-const getTodos = () => {
-  axios
-    .post(baseurl + "gettodos", {
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Credentials": true,
-      },
+const getTodos = async () => {
+  let data = [];
+  await axios
+    .post(baseurl + getTodosEndpoint, {
+      headers: postHeaders,
       withCredentials: true,
       credentials: "same-origin",
     })
     .then((res) => {
+      data = res.data;
+      saveTodosToStorage(data);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  return data || [];
+};
+
+const pushTodo = async (task) => {
+  await axios
+    .post(baseurl + addTodoEndpoint, {
+      headers: postHeaders,
+      withCredentials: true,
+      credentials: "same-origin",
+      data: task,
+    })
+    .then((res) => {
       console.log(res);
-      localStorage.setItem("tasks", JSON.stringify(res.data));
     })
     .catch((err) => {
       console.log(err);
     });
 };
 
-getTodos();
-
-let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+const todos = await getTodos();
+console.log(todos);
 
 // DOM elements
 const taskInput = document.querySelector("#task-input");
@@ -34,7 +71,7 @@ const taskList = document.querySelector("#task-list");
 const sortSelect = document.querySelector("#sort");
 
 // Add new task to the list
-function addTask() {
+function addTodo() {
   if (!taskInput.value) {
     return;
   }
@@ -43,42 +80,44 @@ function addTask() {
     date: new Date().toISOString(),
     done: false,
   };
-  tasks.push(task);
-  localStorage.setItem("tasks", JSON.stringify(tasks));
-  renderTasks();
+  todos.push(task);
+  pushTodo(task);
+  localStorage.setItem(todos, JSON.stringify(todos));
+  renderTodos();
   taskInput.value = "";
 }
 
 // Mark task as done
 function toggleDone(index) {
-  tasks[index].done = !tasks[index].done;
-  localStorage.setItem("tasks", JSON.stringify(tasks));
-  renderTasks();
+  todos[index].done = !todos[index].done;
+  localStorage.setItem(todos, JSON.stringify(todos));
+  renderTodos();
 }
 
 // Delete task from the list
-function deleteTask(index) {
-  tasks.splice(index, 1);
-  localStorage.setItem("tasks", JSON.stringify(tasks));
-  renderTasks();
+function deleteTodo(index) {
+  todos.splice(index, 1);
+  localStorage.setItem(todos, JSON.stringify(todos));
+  renderTodos();
 }
 
 // Edit task content
-function editTask(index) {
-  const newContent = prompt("Enter new task content:", tasks[index].content);
+function editTodo(index) {
+  const newContent = prompt("Enter new task content:", todos[index].content);
   if (!newContent) {
     return;
   }
-  tasks[index].content = newContent;
-  localStorage.setItem("tasks", JSON.stringify(tasks));
-  renderTasks();
+  todos[index].content = newContent;
+  localStorage.setItem(todos, JSON.stringify(todos));
+  renderTodos();
 }
 
 // Render tasks to the list
-function renderTasks() {
+function renderTodos() {
   // Sort tasks by date
   const sortOrder = sortSelect.value === "asc" ? 1 : -1;
-  const sortedTasks = tasks.sort(
+  console.log(todos);
+  const sortedTasks = todos.sort(
     (a, b) => sortOrder * (new Date(a.date) - new Date(b.date))
   );
 
@@ -97,12 +136,12 @@ function renderTasks() {
     const deleteBtn = document.createElement("button");
     deleteBtn.innerText = "X";
     deleteBtn.classList.add("delete-btn");
-    deleteBtn.addEventListener("click", () => deleteTask(index));
+    deleteBtn.addEventListener("click", () => deleteTodo(index));
 
     const editBtn = document.createElement("button");
     editBtn.innerText = "Edit";
     editBtn.classList.add("edit-btn");
-    editBtn.addEventListener("click", () => editTask(index));
+    editBtn.addEventListener("click", () => editTodo(index));
 
     const contentSpan = document.createElement("span");
     contentSpan.innerText = task.content;
@@ -127,8 +166,8 @@ function renderTasks() {
 }
 
 // Add task event listener
-addTaskBtn.addEventListener("click", addTask);
-sortSelect.addEventListener("change", renderTasks);
+addTaskBtn.addEventListener("click", addTodo);
+sortSelect.addEventListener("change", renderTodos);
 
 // Render tasks on page load
-renderTasks();
+renderTodos();
