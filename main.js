@@ -9,103 +9,107 @@ const addButton = document.getElementById("add-todo");
 const todoList = document.getElementById("todos");
 todoList.innerHTML = "";
 
-const createButton = ({text, cb}) => {
-  const button = document.createElement("button");
-  button.textContent = text;
-  button.addEventListener("click", cb);
-  return button;
-}
+// const createButton = ({text, cb}) => {
+//   const button = document.createElement("button");
+//   button.textContent = text;
+//   button.addEventListener("click", cb);
+//   return button;
+// }
 
 const createTodo = ({todo, id, active}) => {
-  const todoWrapper = document.createElement("li");
-  todoWrapper.id = id;
+  const todoElem = `
+    <li id="${id}" class="todo-item">
+      <p class="${active ? "active" : "done"}">${todo}</p>
+      <div>
+        <button class="deleteBtn">Delete</button>
+        <button class="editBtn">Edit</button>
+        <button class="completeBtn">Complete</button>
+      </div>
+    </li>`;
 
-  todoWrapper.classList.add("todo-item");
+  todoList.innerHTML += todoElem;
 
-  const todoItem = document.createElement("p");
-  !active && todoItem.classList.add("done");
+  const todoItem = document.getElementById(`${id}`);
+  const deleteBtn = todoItem.querySelector(".deleteBtn");
+  const editBtn = todoItem.querySelector(".editBtn");
+  const completeBtn = todoItem.querySelector(".completeBtn");
 
-  const buttonWrapper = document.createElement("div");
-
-  const todoComplete = createButton({text: "Complete", cb: (e) => {
-    const todoText = e.target.parentNode.parentNode.querySelector("p");
-    todoText.classList.toggle("done");
-    const todoId = e.target.parentNode.parentNode.id;
-    todoTasks = todoTasks.map((todo) => {
-      if (todo.id === todoId) {
-        return { ...todo, active: !todo.active };
-      }
-      return todo;
-    });
-    todoText.classList.toggle("completed");
-    addToStorage();
-  }});
-
-  const todoEdit = createButton({
-    text: "Edit",
-    cb: (e) => {
-      const button = e.target;
-      const buttonContainer = e.target.parentNode;
-      const todoTextParent = e.target.parentNode.parentNode;
-      const todoText = todoTextParent.querySelector("p");
-
-      todoText.style.display = "none";
-
-      const input = document.createElement("input");
-      input.value = todoText.textContent;
-      todoTextParent.insertBefore(input, buttonContainer);
-
-      const saveButton = createButton({
-        text: "Save",
-        cb: (e) => {
-          const todoText = e.target.parentNode.parentNode.querySelector("p");
-          todoTasks = todoTasks.map((todoElem) => {
-            if (todoElem.id === e.target.parentNode.parentNode.id) {
-              return { ...todoElem, todo: input.value };
-            }
-            return todoElem;
-          });
-          addToStorage();
-          todoText.textContent = input.value;
-          todoText.style.display = "inline-block";
-          button.style.display = "inline-block";
-          input.remove();
-          saveButton.remove();
-        },
-      });
-
-      buttonContainer.appendChild(saveButton);
-
-      button.style.display = "none";
-    },
+  deleteBtn.addEventListener("click", (e) => {
+    todoTasks = todoTasks.filter((todo) => todo.id !== id);
+    todoItem.remove();
   });
 
-  const todoDelete = createButton({
-    text: "Delete",
-    cb: (e) => {
-      const todoId = e.target.parentNode.parentNode.id;
-      todoTasks = todoTasks.filter((todo) => todo.id !== todoId);
-      document.getElementById(todoId).remove();
-    },
-  });
+  editBtn.addEventListener("click", (e) => {
 
-  todoItem.textContent = todo;
 
-  todoWrapper.appendChild(todoItem);
-  buttonWrapper.appendChild(todoDelete);
-  buttonWrapper.appendChild(todoEdit);
-  buttonWrapper.appendChild(todoComplete);
-  todoWrapper.appendChild(buttonWrapper);
-  todoList.appendChild(todoWrapper);
-};
+  return todoElem;
+}
+
+  // const todoComplete = createButton({text: "Complete", cb: (e) => {
+  //   const todoText = e.target.parentNode.parentNode.querySelector("p");
+  //   todoText.classList.toggle("done");
+  //   const todoId = e.target.parentNode.parentNode.id;
+  //   todoTasks = todoTasks.map((todo) => {
+  //     if (todo.id === todoId) {
+  //       return { ...todo, active: !todo.active };
+  //     }
+  //     return todo;
+  //   });
+  //   todoText.classList.toggle("completed");
+  //   addToStorage();
+  // }});
+
+  // const todoEdit = createButton({
+  //   text: "Edit",
+  //   cb: (e) => {
+  //     const button = e.target;
+  //     const buttonContainer = e.target.parentNode;
+  //     const todoTextParent = e.target.parentNode.parentNode;
+  //     const todoText = todoTextParent.querySelector("p");
+
+  //     todoText.style.display = "none";
+
+  //     const input = document.createElement("input");
+  //     input.value = todoText.textContent;
+  //     todoTextParent.insertBefore(input, buttonContainer);
+
+  //     const saveButton = createButton({
+  //       text: "Save",
+  //       cb: (e) => {
+  //         const todoText = e.target.parentNode.parentNode.querySelector("p");
+  //         todoTasks = todoTasks.map((todoElem) => {
+  //           if (todoElem.id === e.target.parentNode.parentNode.id) {
+  //             return { ...todoElem, todo: input.value };
+  //           }
+  //           return todoElem;
+  //         });
+  //         addToStorage();
+  //         todoText.textContent = input.value;
+  //         todoText.style.display = "inline-block";
+  //         button.style.display = "inline-block";
+  //         input.remove();
+  //         saveButton.remove();
+  //       },
+  //     });
+
+  //     buttonContainer.appendChild(saveButton);
+
+  //     button.style.display = "none";
+  //   },
+  // });
+
+  // const todoDelete = createButton({
+  //   text: "Delete",
+  //   cb: (e) => {
+  //     const todoId = e.target.parentNode.parentNode.id;
+  //     todoTasks = todoTasks.filter((todo) => todo.id !== todoId);
+  //     document.getElementById(todoId).remove();
+  //   },
+  // });
 
 const getFromStorage = () => {
   todoTasks = JSON.parse(localStorage.getItem("todoTasks")) ?? [];
-  if (todoTasks) {
-    todoTasks.forEach((todo) => {
-      createTodo(todo);
-    });
-  }
+  if (todoTasks) todoTasks.map((todo) => createTodo(todo));
 };
 
 getFromStorage();
