@@ -9,7 +9,7 @@ const deleteTodoEndpoint = "deletetodo";
 const updateTodoEndpoint = "updatetodo";
 
 const localurl = "http://localhost:8080/";
-const flyUrl = "https://todo-gabbenos.fly.dev/";
+const flyUrl = "https://todo-gabbenos-api.fly.dev/";
 
 const baseurl = ["localhost", "127.0.0.1"].includes(window.location.hostname)
   ? localurl
