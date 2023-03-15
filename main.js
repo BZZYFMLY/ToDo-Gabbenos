@@ -1,13 +1,31 @@
 import axios from "axios";
-import postHeaders from "./src/constants/postHeaders";
+import {v4 as uuid} from "uuid";
 
 const todosStorageKey = "todos";
 const getTodosEndpoint = "gettodos";
 const addTodoEndpoint = "addtodo";
+const clearAllTodosEndpoint = "clearalltodos";
 const deleteTodoEndpoint = "deletetodo";
 const updateTodoEndpoint = "updatetodo";
 
-const baseurl = "http://localhost:3000/";
+const localurl = "http://localhost:8080/";
+const flyUrl = "https://todo-gabbenos.fly.dev/";
+
+const baseurl = ["localhost", "127.0.0.1"].includes(window.location.hostname)
+  ? localurl
+  : flyUrl;
+
+const postHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Content-Type": "application/json",
+  "Access-Control-Allow-Credentials": true,
+};
+
+const axoisOptions = {
+  headers: postHeaders,
+  withCredentials: true,
+  credentials: "same-origin",
+};
 
 const saveToStorage = (key, value) => {
   localStorage.setItem(key, JSON.stringify(value));
@@ -30,93 +48,116 @@ const saveTodosToStorage = (tasks) => {
 const getTodos = async () => {
   let data = [];
   await axios
-    .post(baseurl + getTodosEndpoint, {
-      headers: postHeaders,
-      withCredentials: true,
-      credentials: "same-origin",
-    })
+    .post(baseurl + getTodosEndpoint, axoisOptions)
     .then((res) => {
       data = res.data;
-      saveTodosToStorage(data);
     })
-    .catch((err) => {
-      console.log(err);
-    });
+    .catch((err) => {});
   return data || [];
 };
 
-const pushTodo = async (task) => {
+let todos = await getTodos();
+
+const saveTodo = async (todo) => {
+  let newTodos = [];
+
   await axios
     .post(baseurl + addTodoEndpoint, {
-      headers: postHeaders,
-      withCredentials: true,
-      credentials: "same-origin",
-      data: task,
+      ...axoisOptions,
+      data: todo,
     })
     .then((res) => {
-      console.log(res);
+      newTodos = res.data;
     })
-    .catch((err) => {
-      console.log(err);
-    });
+    .catch((err) => {});
+  return newTodos;
 };
 
-const todos = await getTodos();
-console.log(todos);
+const updateTodo = async (todo) => {
+  let newTodos = [];
 
-// DOM elements
-const taskInput = document.querySelector("#task-input");
-const addTaskBtn = document.querySelector("#add-task-btn");
-const taskList = document.querySelector("#task-list");
-const sortSelect = document.querySelector("#sort");
+  await axios
+    .post(baseurl + updateTodoEndpoint, {
+      ...axoisOptions,
+      data: todo,
+    })
+    .then((res) => {
+      newTodos = res.data;
+    })
+    .catch((err) => {});
+  return newTodos;
+};
+
+const removeTodo = async (todo) => {
+  let newTodos;
+  await axios
+    .post(baseurl + deleteTodoEndpoint, {
+      ...axoisOptions,
+      data: todo,
+    })
+    .then((res) => {
+      newTodos = res.data;
+    })
+    .catch((err) => {});
+  return newTodos;
+};
 
 // Add new task to the list
-function addTodo() {
-  if (!taskInput.value) {
+async function addTodo() {
+  if (!todoInput.value) {
     return;
   }
-  const task = {
-    content: taskInput.value,
+
+  const todo = {
+    id: uuid(),
+    content: todoInput.value,
     date: new Date().toISOString(),
     done: false,
   };
-  todos.push(task);
-  pushTodo(task);
-  localStorage.setItem(todos, JSON.stringify(todos));
+
+  todos = await saveTodo(todo);
   renderTodos();
-  taskInput.value = "";
+  todoInput.value = "";
 }
 
 // Mark task as done
-function toggleDone(index) {
-  todos[index].done = !todos[index].done;
-  localStorage.setItem(todos, JSON.stringify(todos));
+async function toggleDone(todo) {
+  todos = await updateTodo({
+    ...todo,
+    done: !todo.done,
+  });
   renderTodos();
 }
 
 // Delete task from the list
-function deleteTodo(index) {
-  todos.splice(index, 1);
-  localStorage.setItem(todos, JSON.stringify(todos));
+async function deleteTodo(todo) {
+  todos = await removeTodo(todo);
   renderTodos();
 }
 
 // Edit task content
-function editTodo(index) {
-  const newContent = prompt("Enter new task content:", todos[index].content);
-  if (!newContent) {
+async function editTodo(todo) {
+  const newContent = prompt("Enter new task content:", todo.content);
+
+  if (!newContent || newContent === todo.content || !newContent === "") {
     return;
   }
-  todos[index].content = newContent;
-  localStorage.setItem(todos, JSON.stringify(todos));
+  const modifiedTodo = {...todo, content: newContent};
+
+  todos = await updateTodo(modifiedTodo);
   renderTodos();
 }
+
+// DOM elements
+const todoInput = document.querySelector("#task-input");
+const addTaskBtn = document.querySelector("#add-task-btn");
+const taskList = document.querySelector("#task-list");
+const sortSelect = document.querySelector("#sort");
 
 // Render tasks to the list
 function renderTodos() {
   // Sort tasks by date
   const sortOrder = sortSelect.value === "asc" ? 1 : -1;
-  console.log(todos);
   const sortedTasks = todos.sort(
     (a, b) => sortOrder * (new Date(a.date) - new Date(b.date))
   );
@@ -125,33 +166,34 @@ function renderTodos() {
   taskList.innerHTML = "";
 
   // Render tasks to the list
-  sortedTasks.forEach((task, index) => {
+  sortedTasks.forEach((todo) => {
     const taskEl = document.createElement("li");
+    taskEl.id = todo?.id;
 
     const doneBtn = document.createElement("button");
     doneBtn.innerText = "✓";
     doneBtn.classList.add("done-btn");
-    doneBtn.addEventListener("click", () => toggleDone(index));
+    doneBtn.addEventListener("click", () => toggleDone(todo));
 
     const deleteBtn = document.createElement("button");
     deleteBtn.innerText = "X";
     deleteBtn.classList.add("delete-btn");
-    deleteBtn.addEventListener("click", () => deleteTodo(index));
+    deleteBtn.addEventListener("click", async () => await deleteTodo(todo));
 
     const editBtn = document.createElement("button");
     editBtn.innerText = "Edit";
     editBtn.classList.add("edit-btn");
-    editBtn.addEventListener("click", () => editTodo(index));
+    editBtn.addEventListener("click", () => editTodo(todo));
 
     const contentSpan = document.createElement("span");
-    contentSpan.innerText = task.content;
+    contentSpan.innerText = todo.content;
     contentSpan.classList.add("content");
 
     const dateSpan = document.createElement("span");
     dateSpan.classList.add("date");
-    dateSpan.innerText = new Date(task.date).toLocaleDateString();
+    dateSpan.innerText = new Date(todo.date).toLocaleDateString();
 
-    if (task.done) {
+    if (todo.done) {
       taskEl.classList.add("done");
     }
 
