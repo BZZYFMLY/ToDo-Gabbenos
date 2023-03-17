@@ -55,7 +55,9 @@ const getTodos = async () => {
     .then((res) => {
       data = res.data;
     })
-    .catch((err) => {});
+    .catch((err) => {
+      console.log(err);
+    });
   return data || [];
 };
 
@@ -72,7 +74,9 @@ const saveTodo = async (todo) => {
     .then((res) => {
       newTodos = res.data;
     })
-    .catch((err) => {});
+    .catch((err) => {
+      console.log(err);
+    });
   return newTodos;
 };
 
@@ -87,7 +91,9 @@ const updateTodo = async (todo) => {
     .then((res) => {
       newTodos = res.data;
     })
-    .catch((err) => {});
+    .catch((err) => {
+      console.log(err);
+    });
   return newTodos;
 };
 
@@ -101,7 +107,9 @@ const removeTodo = async (todo) => {
     .then((res) => {
       newTodos = res.data;
     })
-    .catch((err) => {});
+    .catch((err) => {
+      console.log(err);
+    });
   return newTodos;
 };
 
