@@ -5,10 +5,15 @@ class UIHandler {
     this.app = app;
 
     this.ui = null;
+    this.editedElementId = null;
+
     this.#name = {
       addButton: {id: "add-todo", tag: "button"},
       todoList: {id: "todos", tag: "ul"},
       todoInput: {id: "new-todo", tag: "input"},
+      editInput: {id: "edit-todo", tag: "input"},
+      saveTodo: {id: "save-todo", tag: "button"},
+      editModal: {id: "edit-modal", tag: "div"},
     };
 
     this.elements = Object.entries(this.#name).reduce((acc, [key, value]) => {
@@ -31,9 +36,15 @@ class UIHandler {
       (e) => (this.todoText = e.target.value)
     );
 
+    this.elements.saveTodo.addEventListener("click", (e) => {
+      const todoId = this.editedElementId;
+      this.app.updateTodo(this.elements.editInput.value, todoId);
+      this.elements.editModal.parentElement.classList.add("hidden");
+      this.elements.editModal.classList.add("hidden");
+    });
+
     this.elements.addButton.addEventListener("click", () => {
       this.app.createNewTodo(this.todoText);
-      this.renderTodoList();
     });
   }
 
@@ -49,7 +60,7 @@ class UIHandler {
   renderTodoList() {
     this.initInputField();
     this.clearTodoList();
-    this.app.todoTasks.forEach((todoElem) => {
+    this.app.storage.getAllTodos().forEach((todoElem) => {
       this.renderTodos(todoElem);
     });
   }
@@ -77,60 +88,20 @@ class UIHandler {
     parent.appendChild(button);
   }
 
-  createCompleteButton(parent, todoItem) {
+  createCompleteButton(parent) {
     const cb = (e) => {
-      const todoText = parent.parentElement.querySelector("p");
-      todoText.classList.toggle("done");
-
-      let isCompleted;
-
       const todoId = parent.parentElement.id;
-      console.log(this.app.todoTasks);
-
-      this.app.todoTasks = this.app.todoTasks.map((todo) => {
-        if (todo.id === todoId) {
-          console.log("vagyis ez a todo: ", todo);
-          isCompleted = !todo.active;
-          return {...todo, active: isCompleted};
-        }
-        return todo;
-      });
-      isCompleted && todoText.classList.add("done");
-      // TODO: implement the useage of storageHandler save method
+      this.app.setDoneTodo(todoId);
     };
 
     this.createButton("Complete", {type: "click", cb}, parent);
   }
 
   createEditButton(parent, todoElem) {
-    const cb = (e) => {
-      const button = e.target;
-      const todoText = todoElem.querySelector("p");
-
-      button.style.display = "none";
-      todoText.style.display = "none";
-
-      const input = this.createElement("input", {
-        value: todoText.textContent,
-        parent: todoElem,
-        insterBefore: todoText,
-      });
-
-      input.addEventListener("onchang", (e) => {
-        todoText.textContent = e.target.value;
-      });
-
-      const originalTodo = this.app.todoTasks.find(
-        (todo) => todo.id === todoElem.id
-      );
-      const newTodo = {...originalTodo, todo: input.value};
-
-      const save = (e) => {
-        // newTodo
-        // TODO implement the update method
-      };
-
-      this.createButton("Save", {type: "click", save}, button.parentElement);
+    const cb = () => {
+      this.elements.editModal.parentElement.classList.remove("hidden");
+      this.elements.editModal.classList.remove("hidden");
+      this.editedElementId = todoElem.id;
     };
 
     this.createButton("Edit", {type: "click", cb}, parent);
@@ -140,7 +111,6 @@ class UIHandler {
     const cb = (e) => {
       const todoId = todoElem.id;
       this.app.removeTodo(todoId);
-      this.renderTodoList();
     };
 
     this.createButton("Delete", {type: "click", cb}, parent);
