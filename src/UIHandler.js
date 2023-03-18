@@ -1,5 +1,3 @@
-import {v4 as uuid} from "uuid";
-
 class UIHandler {
   #name = {};
 
@@ -28,14 +26,32 @@ class UIHandler {
 
     this.elements.todoList.innerHTML = "";
     this.todoText = "";
-
-    console.log(this.elements.todoInput);
     this.elements.todoInput.addEventListener(
       "input",
       (e) => (this.todoText = e.target.value)
     );
 
-    this.elements.addButton.addEventListener("click", () => this.createTodo());
+    this.elements.addButton.addEventListener("click", () => {
+      this.app.createNewTodo(this.todoText);
+      this.renderTodoList();
+    });
+  }
+
+  initInputField() {
+    this.todoText = "";
+    this.elements.todoInput.value = "";
+  }
+
+  clearTodoList() {
+    this.elements.todoList.innerHTML = "";
+  }
+
+  renderTodoList() {
+    this.initInputField();
+    this.clearTodoList();
+    this.app.todoTasks.forEach((todoElem) => {
+      this.renderTodos(todoElem);
+    });
   }
 
   createElement(
@@ -53,23 +69,27 @@ class UIHandler {
     return elem;
   }
 
-  createButton(text, cb, parent) {
+  createButton(text, eventHandler, parent) {
     const button = this.createElement("button", {
       textContent: text,
-      event: {type: "click", cb},
+      event: eventHandler,
     });
     parent.appendChild(button);
   }
 
   createCompleteButton(parent, todoItem) {
     const cb = (e) => {
-      const todoText = todoItem.querySelector("p");
+      const todoText = parent.parentElement.querySelector("p");
+      todoText.classList.toggle("done");
+
       let isCompleted;
 
-      const todoId = todoElem.id;
+      const todoId = parent.parentElement.id;
+      console.log(this.app.todoTasks);
 
       this.app.todoTasks = this.app.todoTasks.map((todo) => {
         if (todo.id === todoId) {
+          console.log("vagyis ez a todo: ", todo);
           isCompleted = !todo.active;
           return {...todo, active: isCompleted};
         }
@@ -119,40 +139,34 @@ class UIHandler {
   createDeleteButton(parent, todoElem) {
     const cb = (e) => {
       const todoId = todoElem.id;
-
-      this.app.todoTasks = this.app.todoTasks.filter(
-        (todo) => todo.id !== todoId
-      );
-      // TODO: implement storageHandler todoElem.remove();
+      this.app.removeTodo(todoId);
+      this.renderTodoList();
     };
 
     this.createButton("Delete", {type: "click", cb}, parent);
   }
 
-  createTodo = (id) => {
-    const time = new Date();
-    const timeString = new Intl.DateTimeFormat("hu-HU", {
-      dateStyle: "short",
-      timeStyle: "short",
-    }).format(time);
+  renderTodos = ({id, content, time, active}) => {
     const todoElem = this.createElement("li", {
       className: "todo-item",
       parent: this.elements.todoList,
-      id: id ?? uuid(),
+      id: id,
     });
     const todoItem = this.createElement("p", {
       parent: todoElem,
-      textContent: this.todoText,
+      className: active ? "" : "done",
+      textContent: content,
     });
     const todoTime = this.createElement("span", {
       className: "todo-time",
       parent: todoElem,
-      textContent: timeString,
+      textContent: time,
     });
     const todoButtonWrapper = this.createElement("div", {
       className: "todo-button-wrapper",
       parent: todoElem,
     });
+
     this.createCompleteButton(todoButtonWrapper, todoElem);
     this.createEditButton(todoButtonWrapper, todoElem);
     this.createDeleteButton(todoButtonWrapper, todoElem);
