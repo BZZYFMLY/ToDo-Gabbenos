@@ -1,10 +1,32 @@
 import {v4 as uuid} from "uuid";
 
 class TodoApp {
-  constructor({UIHandler}) {
-    this.todoTasks = [];
+  #todoTasks = [];
 
-    this.uiHandler = new UIHandler(this);
+  constructor({UIHandler, StorageHandler}) {
+    this.ui = new UIHandler(this);
+    this.storage = new StorageHandler(this);
+  }
+
+  addTodo(newTodo) {
+    this.storage.createTodo(newTodo);
+    this.ui.renderTodoList();
+  }
+
+  setDoneTodo(todoId) {
+    this.#todoTasks = this.#todoTasks.map((todo) => {
+      if (todo.id === todoId) {
+        return {
+          ...todo,
+          active: !todo.active,
+        };
+      }
+    });
+    this.ui.renderTodoList();
+  }
+
+  todoTasks() {
+    return this.#todoTasks;
   }
 
   createNewTodo = (content) => {
@@ -23,19 +45,23 @@ class TodoApp {
     this.addTodo(newTodo);
   };
 
-  addTodo(todo) {
-    this.todoTasks.push(todo);
+  removeTodo(todoId) {
+    this.#todoTasks = this.#todoTasks.filter((todo) => todo.id !== todoId);
   }
 
-  removeTodo(todoId) {
-    console.log("todoId: ", todoId);
-    console.log("this.todoTasks: ", this.todoTasks);
-    this.todoTasks = this.todoTasks.filter((todo) => todo.id !== todoId);
-    console.log("this.todoTasks: ", this.todoTasks);
+  updateTodo(content, todoId) {
+    this.#todoTasks = this.#todoTasks.map((todo) => {
+      if (todo.id === todoId) {
+        return {
+          ...todo,
+          content,
+        };
+      }
+    });
   }
 
   getTodos() {
-    return this.todoTasks;
+    return this.#todoTasks;
   }
 }
 
