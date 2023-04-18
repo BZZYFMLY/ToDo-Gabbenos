@@ -19,6 +19,7 @@ a {
   color: #646cff;
   text-decoration: inherit;
 }
+
 a:hover {
   color: #535bf2;
 }
@@ -41,9 +42,11 @@ h1 {
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.vanilla:hover {
   filter: drop-shadow(0 0 2em #f7df1eaa);
 }
@@ -68,9 +71,11 @@ button {
   transition: border-color 0.25s;
   margin: 0rem 0.5rem;
 }
+
 button:hover {
   border-color: #646cff;
 }
+
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
@@ -125,9 +130,11 @@ button:focus-visible {
     color: #213547;
     background-color: #ffffff;
   }
+
   a:hover {
     color: #747bff;
   }
+
   button {
     background-color: #f9f9f9;
   }
@@ -136,12 +143,14 @@ button:focus-visible {
 * {
   --boxShadow: 1px 5px 10px rgba(0, 0, 0, 0.5);
 }
+
 #todos {
   padding: 2rem;
 }
 
 .todo-item {
   display: flex;
+  color: white;
   background-color: #213547;
   border-radius: 8px;
   padding: 1rem;
@@ -154,4 +163,11 @@ button:focus-visible {
 .done {
   text-decoration: line-through;
   color: #888;
+}
+
+#edit-button-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  flex-direction: row;
 }

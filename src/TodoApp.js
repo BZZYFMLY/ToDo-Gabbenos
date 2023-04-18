@@ -1,32 +1,14 @@
-import {v4 as uuid} from "uuid";
+import { v4 as uuid } from "uuid";
 
 class TodoApp {
-  #todoTasks = [];
-
-  constructor({UIHandler, StorageHandler}) {
-    this.ui = new UIHandler(this);
+  constructor({ UIHandler, StorageHandler }) {
     this.storage = new StorageHandler(this);
+    this.ui = new UIHandler(this);
   }
 
   addTodo(newTodo) {
     this.storage.createTodo(newTodo);
     this.ui.renderTodoList();
-  }
-
-  setDoneTodo(todoId) {
-    this.#todoTasks = this.#todoTasks.map((todo) => {
-      if (todo.id === todoId) {
-        return {
-          ...todo,
-          active: !todo.active,
-        };
-      }
-    });
-    this.ui.renderTodoList();
-  }
-
-  todoTasks() {
-    return this.#todoTasks;
   }
 
   createNewTodo = (content) => {
@@ -45,24 +27,21 @@ class TodoApp {
     this.addTodo(newTodo);
   };
 
-  removeTodo(todoId) {
-    this.#todoTasks = this.#todoTasks.filter((todo) => todo.id !== todoId);
+  setDoneTodo(todoId) {
+    const oldTodo = this.storage.getOneTodo(todoId);
+    this.storage.updateTodo(todoId, { ...oldTodo, active: !oldTodo.active });
+    this.ui.renderTodoList();
   }
 
-  updateTodo(content, todoId) {
-    this.#todoTasks = this.#todoTasks.map((todo) => {
-      if (todo.id === todoId) {
-        return {
-          ...todo,
-          content,
-        };
-      }
-    });
-  }
+  removeTodo = (todoId) => {
+    this.storage.deleteTodo(todoId);
+    this.ui.renderTodoList();
+  };
 
-  getTodos() {
-    return this.#todoTasks;
-  }
+  updateTodo = (todoId, newContent) => {
+    this.storage.updateTodo(todoId, { content: newContent });
+    this.ui.renderTodoList();
+  };
 }
 
 export default TodoApp;

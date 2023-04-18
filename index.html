@@ -1,33 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ToDo app a'la Gabbenos</title>
-  </head>
-  <body>
-    <h1>Buenos Gabbenos!</h1>
-    <div id="controls">
-      <input type="text" id="new-todo" />
-      <button id="add-todo">Add</button>
-    </div>
-    <ul id="todos">
-      <li>Learn Vite</li>
-      <li>Learn Vue</li>
-      <li>Learn Vite + Vue</li>
-    </ul>
-    <div class="modal-cover hidden">
-      <div id="edit-modal" class="modal hidden" >
-        <div class="modal-header">
-          <h2>Edit todo</h2>
-        </div>
-        <div class="modal-body">
-          <input type="text" id="edit-todo" />
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ToDo app a'la Gabbenos</title>
+</head>
+
+<body>
+  <h1>Buenos Gabbenos!</h1>
+  <div id="controls">
+    <input type="text" id="new-todo" />
+    <button id="add-todo">Add</button>
+  </div>
+  <ul id="todos">
+    <li>Learn Vite</li>
+    <li>Learn Vue</li>
+    <li>Learn Vite + Vue</li>
+  </ul>
+  <div class="modal-cover hidden">
+    <div id="edit-modal" class="modal">
+      <div class="modal-header">
+        <h2>Edit todo</h2>
+      </div>
+      <div class="modal-body">
+        <input type="text" id="edit-todo" />
+        <div id="edit-button-container">
           <button id="save-todo">Save</button>
+          <button id="cancel-edit-todo">Cancel</button>
         </div>
       </div>
     </div>
-    <script type="module" src="/main.js"></script>
-  </body>
+  </div>
+  <script type="module" src="/main.js"></script>
+</body>
+
 </html>
