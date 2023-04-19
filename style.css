@@ -1,4 +1,7 @@
+
 :root {
+  --boxShadow: 1px 5px 10px rgba(0, 0, 0, 0.5);
+  --card-width: 320px;
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -100,12 +103,13 @@ button:focus-visible {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: #111;
   border-radius: 8px;
   padding: 2rem;
   max-width: 500px;
   width: 75%;
-  box-shadow: 0 0 2em #000000aa;
+  background-color: #eee;
+  color: #1a1a1a;
+  box-shadow: var(--boxShadow);
   z-index: 1010;
 }
 
@@ -119,6 +123,11 @@ button:focus-visible {
 
 #edit-todo {
   margin-bottom: 1rem;
+  font-size: 1.3rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  outline: none;
+  box-shadow: var(--boxShadow);
 }
 
 .hidden {
@@ -140,22 +149,19 @@ button:focus-visible {
   }
 }
 
-* {
-  --boxShadow: 1px 5px 10px rgba(0, 0, 0, 0.5);
-}
-
 #todos {
   padding: 2rem;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+  display: grid;
   gap: 2rem;
+  grid-template-rows: auto;
+  grid-template-columns: repeat(auto-fit, minmax(var(--card-width), 1fr));
 }
 
 .todo-item {
   display: flex;
   flex-direction: column;
-  max-width: 350px;
+  margin: 0 auto;
+  max-width: var(--card-width);
   gap:1rem;
   color: white;
   background-color: #213547;
@@ -177,4 +183,69 @@ button:focus-visible {
   align-items: center;
   justify-content: space-around;
   flex-direction: row;
+}
+
+#cancel-edit-todo {
+  background-color: #aa0000aa;
+}
+
+#save-todo {
+  background-color: #00aa00aa;
+}
+
+.delete-btn {
+  background-color: #ff000055;
+}
+
+.edit-btn {
+  background-color: #00ff0055;
+}
+
+.complete-btn {
+  background-color: #0000ff55;
+}
+
+#controls {
+  background-color: #00000000;
+  padding: 1rem;
+  margin: 0 auto;
+  max-width: var(--card-width);
+  border-radius: 0.5rem;
+  transition: all 300ms;
+}
+
+#controls:hover {
+  background-color: #00000055;
+}
+
+#controls button {
+  border-radius: 0 0.5rem 0.5rem 0;
+  background-color: #0000ff55;
+  margin: 0!important;
+  border: 0px solid transparent;
+  transition: all 300ms;
+  height: 3rem;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+#controls button:hover {
+  background-color: #0000ff;
+  outline: none;
+}
+
+#controls input {
+  height: 2rem;
+  margin: 0!important;
+  border: 0px solid transparent;
+  border-radius: 0.5rem 0 0 0.5rem;
+  background-color: #ffffff;
+  color:#000000ee;
+  outline: none;
+  border: none;
+  padding: 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  font-family: inherit;
 }
