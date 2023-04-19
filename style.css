@@ -30,6 +30,7 @@ a:hover {
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
+  text-align: center;
 }
 
 #app {
@@ -152,6 +153,8 @@ button:focus-visible {
 #todos {
   padding: 2rem;
   display: grid;
+  width: 80%;
+  margin: 0 auto;
   gap: 2rem;
   grid-template-rows: auto;
   grid-template-columns: repeat(auto-fit, minmax(var(--card-width), 1fr));
@@ -165,11 +168,8 @@ button:focus-visible {
   gap:1rem;
   color: white;
   background-color: #213547;
-  border-radius: 8px;
+  border-radius: 1rem;
   padding: 1rem;
-  align-items: start;
-  justify-content: space-between;
-  margin-bottom: 1rem;
   box-shadow: var(--boxShadow);
 }
 
@@ -207,11 +207,16 @@ button:focus-visible {
 
 #controls {
   background-color: #00000000;
-  padding: 1rem;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  padding: 0.3rem 0.3rem;
+  justify-content: center;
   margin: 0 auto;
   max-width: var(--card-width);
   border-radius: 0.5rem;
   transition: all 300ms;
+  box-shadow: var(--boxShadow);
 }
 
 #controls:hover {
@@ -236,6 +241,7 @@ button:focus-visible {
 }
 
 #controls input {
+  width: 100%;
   height: 2rem;
   margin: 0!important;
   border: 0px solid transparent;
@@ -243,8 +249,7 @@ button:focus-visible {
   background-color: #ffffff;
   color:#000000ee;
   outline: none;
-  border: none;
-  padding: 0.5rem;
+  padding: 0.5rem 1rem;
   font-size: 1rem;
   font-weight: 500;
   font-family: inherit;
