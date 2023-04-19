@@ -1,17 +1,5 @@
 import {initializeApp} from "firebase/app";
 
-import {
-  getFirestore,
-  addDoc,
-  collection,
-  query,
-  orderBy,
-  onSnapshot,
-  doc,
-  setDoc,
-  where,
-} from "firebase/firestore";
-
 class FirebaseApp {
   // singletone pattern
   static instance = null;
@@ -35,7 +23,6 @@ class FirebaseApp {
     };
 
     initializeApp(this.firebaseConfig);
-    this.db = getFirestore();
 
     return this;
   }
