@@ -146,15 +146,22 @@ button:focus-visible {
 
 #todos {
   padding: 2rem;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 2rem;
 }
 
 .todo-item {
   display: flex;
+  flex-direction: column;
+  max-width: 350px;
+  gap:1rem;
   color: white;
   background-color: #213547;
   border-radius: 8px;
   padding: 1rem;
-  align-items: center;
+  align-items: start;
   justify-content: space-between;
   margin-bottom: 1rem;
   box-shadow: var(--boxShadow);
