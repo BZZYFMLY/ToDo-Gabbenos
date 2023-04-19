@@ -122,7 +122,7 @@ class UIHandlerAbstract {
 
   handleAddButton() {
     this.elements.addButton.addEventListener("click", () => {
-      this.app.createNewTodo(this.todoText);
+      this.todoText && this.app.createNewTodo(this.todoText);
     });
   }
 
