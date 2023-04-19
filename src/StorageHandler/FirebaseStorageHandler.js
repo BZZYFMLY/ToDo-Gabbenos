@@ -4,26 +4,25 @@ import {initializeApp} from "firebase/app";
 
 import {
   getFirestore,
-  addDoc,
   collection,
   query,
   orderBy,
+  deleteDoc,
   onSnapshot,
   doc,
+  updateDoc,
   setDoc,
-  where,
 } from "firebase/firestore";
 
 class FirebaseStorageHandler extends AbstractStorageHandler {
   #todos;
-  #dbName;
+  #db;
+  #colName;
+  #todoListener;
 
   constructor(app) {
     super(app);
     this.#todos = [];
-
-    this.#dbName = "todos";
-
     this.firebaseConfig = {
       apiKey: "AIzaSyApxout8xT1PmAHAWk7Q-MAvnumqPjIUUk",
       authDomain: "gabbenos-todo.firebaseapp.com",
@@ -39,47 +38,73 @@ class FirebaseStorageHandler extends AbstractStorageHandler {
 
     // this.firebaseApp = FirebaseApp.getInstance;
 
-    this.db = getFirestore();
+    this.#db = getFirestore();
+
+    this.#colName = "todos";
+
+    this.query = query(
+      collection(this.#db, this.#colName),
+      orderBy("time", "desc")
+    );
+
     this.subscribeToTodos();
   }
 
-  subscribeToTodos() {
-    const q = query(collection(this.db, this.#dbName), orderBy("timestamp", "desc"));
-    this.todoListener = onSnapshot(q, (snaps) => {
-      this.todos = snaps.docs.map((doc) => {
-        return { id: doc.id, ...doc.data() };
+  async subscribeToTodos() {
+    this.#todoListener = onSnapshot(this.query, (snaps) => {
+      this.#todos = snaps.docs.map((doc) => {
+        return doc.data();
       });
-      console.log(this.todos)
+      this.app.ui.renderTodoList();
     });
   }
 
   unsubscribeFromTodos() {
-    if (this.todoListener != null) {
-      this.todoListener();
-      this.todoListener = null;
+    if (this.#todoListener != null) {
+      this.#todoListener();
+      this.#todoListener = null;
     }
   }
 
-  saveToStorage(newTodos) {
-    addDoc(collection(db, this.#dbName), newTodos);
+  async saveToStorage(todo) {
+    await setDoc(doc(this.#db, this.#colName, todo.id), todo);
   }
 
-  loadFromStorage() {}
-
-  // CRUD - Creat, Read, Update, Delete
-  createTodo(todo) {
-    addDoc(collection(this.db, this.#dbName), todo);
-  }
-
-  getAllTodos() {
+  loadFromStorage() {
     return this.#todos;
   }
 
-  getOneTodo(id) {}
+  // CRUD - Creat, Read, Update, Delete
+  async createTodo(todo) {
+    await this.saveToStorage(todo);
+  }
 
-  updateTodo(id, newTodo) {}
+  getAllTodos() {
+    return this.loadFromStorage();
+  }
 
-  deleteTodo(id) {}
+  getOneFromDb(id) {
+    const docRef = doc(this.#db, this.#colName, id);
+    return docRef;
+  }
+
+  async getOneTodo(id) {
+    const docRef = this.getOneFromDb(id);
+    const docSnap = await getDoc(docRef);
+    const todo = docSnap.data();
+    if (docSnap.exists()) {
+    } else {
+    }
+    return todo;
+  }
+
+  updateTodo(id, newTodo) {
+    updateDoc(doc(this.#db, this.#colName, id), newTodo);
+  }
+
+  async deleteTodo(id) {
+    await deleteDoc(doc(this.#db, this.#colName, id));
+  }
 }
 
 export default FirebaseStorageHandler;
