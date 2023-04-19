@@ -81,10 +81,11 @@ class UIHandlerAbstract {
     );
   }
 
-  createButton(text, eventHandler, parent) {
+  createButton(textContent, event, parent, className = "") {
     const button = this.createElement("button", {
-      textContent: text,
-      event: eventHandler,
+      textContent,
+      event,
+      className,
     });
     parent.appendChild(button);
   }
@@ -95,7 +96,7 @@ class UIHandlerAbstract {
       this.app.setDoneTodo(todoId);
     };
 
-    this.createButton("Complete", {type: "click", cb}, parent);
+    this.createButton("Complete", {type: "click", cb}, parent, "complete-btn");
   }
 
   createEditButton(parent, todoElem) {
@@ -107,7 +108,7 @@ class UIHandlerAbstract {
       this.elements.editInput.value = todoContent ?? "";
     };
 
-    this.createButton("Edit", {type: "click", cb}, parent);
+    this.createButton("Edit", {type: "click", cb}, parent, "edit-btn");
   }
 
   createDeleteButton(parent, todoElem) {
@@ -116,7 +117,7 @@ class UIHandlerAbstract {
       this.app.removeTodo(todoId);
     };
 
-    this.createButton("Delete", {type: "click", cb}, parent);
+    this.createButton("Delete", {type: "click", cb}, parent, "delete-btn");
   }
 
   handleAddButton() {
