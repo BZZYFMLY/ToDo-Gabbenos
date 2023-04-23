@@ -13,7 +13,7 @@ const endpoints = {
   todos: "/gettodos",
   addTodo: "/addtodo",
   deleteTodo: "/deletetodo",
-  updateTodo: "/updatetodos",
+  updateTodo: "/updatetodo",
 };
 const requestHeaders = {
   "Content-Type": "application/json",
@@ -37,7 +37,7 @@ function App() {
   }, []);
 
   const handleDelete = (e) => {
-    const {id} = e.target;
+    const {id} = e.target.dataset;
     console.log(id);
     fetch(baseURL + endpoints.deleteTodo, {
       ...postMethod,
@@ -53,8 +53,18 @@ function App() {
     console.log("edit");
   };
 
-  const handleDone = () => {
-    console.log("done");
+  const handleDone = (e) => {
+    const {id} = e.target.dataset;
+    const todoToUpdate = todos.find((todo) => todo.id === id);
+
+    fetch(baseURL + endpoints.updateTodo, {
+      ...postMethod,
+      body: JSON.stringify({...todoToUpdate, done: !todoToUpdate.done}),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setTodos(data ?? []);
+      });
   };
 
   const handleAddSubmit = (e) => {
@@ -102,11 +112,15 @@ function App() {
                   <h2>{todo.content}</h2>
                   <p>{todo.done ? "Completed" : "Not Completed"}</p>
                   <p>{todo.date}</p>
-                  <button id={todo.id} onClick={handleDelete}>
+                  <button data-id={todo.id} onClick={handleDelete}>
                     Delete
                   </button>
-                  <button onClick={handledit}>Edit</button>
-                  <button onClick={handleDone}>Done</button>
+                  <button data-id={todo.id} onClick={handledit}>
+                    Edit
+                  </button>
+                  <button data-id={todo.id} onClick={handleDone}>
+                    Done
+                  </button>
                 </li>
               )
           )
