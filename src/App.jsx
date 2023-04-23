@@ -43,12 +43,10 @@ function App() {
       ...postMethod,
       body: JSON.stringify({id}),
     })
-      .then((res) => {
-        if (res.status === 200) res.json();
-        else throw new Error("Error deleting todo");
-      })
-      .then((data) => setTodos(data ?? []))
-      .catch((err) => console.log(err));
+      .then((res) => res.json())
+      .then((data) => {
+        setTodos(data ?? []);
+      });
   };
 
   const handledit = () => {
@@ -73,12 +71,10 @@ function App() {
       ...postMethod,
       body: JSON.stringify(newTodo),
     })
-      .then((res) => {
-        if (res.status === 200) res.json();
-        else throw new Error("Error adding todo");
-      })
-      .then((data) => setTodos(data ?? []))
-      .catch((err) => console.log(err));
+      .then((res) => res.json())
+      .then((data) => {
+        setTodos(data ?? []);
+      });
   };
 
   const handleAddTodoInput = (e) => setAddTodoInput(e.target.value);
