@@ -1,12 +1,18 @@
 import {Fragment, useState, useEffect} from "react";
 import {v4 as uuidv4} from "uuid";
 
-const baseURL = "https://todo-gabbenos-api.fly.dev";
+
+const backendURL = {
+  remote: "https://todo-gabbenos-api.fly.dev",
+  local: "http://localhost:8080",
+};
+
+const baseURL = backendURL.local;
 
 const endpoints = {
   todos: "/gettodos",
   addTodo: "/addtodo",
-  deleteTodo: "/deletetodos",
+  deleteTodo: "/deletetodo",
   updateTodo: "/updatetodos",
 };
 const requestHeaders = {
@@ -18,18 +24,31 @@ const postMethod = {
   headers: requestHeaders,
 };
 
+const getMethod = {method: "GET", headers: requestHeaders};
+
 function App() {
   const [todos, setTodos] = useState([]);
   const [addTodoInput, setAddTodoInput] = useState("");
 
   useEffect(() => {
-    fetch(baseURL + endpoints.todos, postMethod)
+    fetch(baseURL + endpoints.todos, getMethod)
       .then((res) => res.json())
-      .then((data) => setTodos(data.filter((todo) => !!todo)));
+      .then((data) => setTodos(data ?? []));
   }, []);
 
-  const handleDelete = () => {
-    console.log("delete");
+  const handleDelete = (e) => {
+    const {id} = e.target;
+    console.log(id);
+    fetch(baseURL + endpoints.deleteTodo, {
+      ...postMethod,
+      body: JSON.stringify({id}),
+    })
+      .then((res) => {
+        if (res.status === 200) res.json();
+        else throw new Error("Error deleting todo");
+      })
+      .then((data) => setTodos(data ?? []))
+      .catch((err) => console.log(err));
   };
 
   const handledit = () => {
@@ -53,11 +72,14 @@ function App() {
     fetch(baseURL + endpoints.addTodo, {
       ...postMethod,
       body: JSON.stringify(newTodo),
-    }).then((res) => res.json());
-    setTodos([...todos, newTodo]);
+    })
+      .then((res) => {
+        if (res.status === 200) res.json();
+        else throw new Error("Error adding todo");
+      })
+      .then((data) => setTodos(data ?? []))
+      .catch((err) => console.log(err));
   };
-
-  console.log(todos);
 
   const handleAddTodoInput = (e) => setAddTodoInput(e.target.value);
 
@@ -76,18 +98,24 @@ function App() {
       </form>
       <h2> Todos </h2>
       <ul>
-        {todos.map(
-          (todo) =>
-            todo && (
-              <li key={todo.id}>
-                <h2>{todo.content}</h2>
-                <p>{todo.done ? "Completed" : "Not Completed"}</p>
-                <p>{todo.date}</p>
-                <button onClick={handleDelete}>Delete</button>
-                <button onClick={handledit}>Edit</button>
-                <button onClick={handleDone}>Done</button>
-              </li>
-            )
+        {todos.length > 0 ? (
+          todos.map(
+            (todo) =>
+              todo && (
+                <li key={todo.id}>
+                  <h2>{todo.content}</h2>
+                  <p>{todo.done ? "Completed" : "Not Completed"}</p>
+                  <p>{todo.date}</p>
+                  <button id={todo.id} onClick={handleDelete}>
+                    Delete
+                  </button>
+                  <button onClick={handledit}>Edit</button>
+                  <button onClick={handleDone}>Done</button>
+                </li>
+              )
+          )
+        ) : (
+          <p>No Todos</p>
         )}
       </ul>
     </Fragment>
