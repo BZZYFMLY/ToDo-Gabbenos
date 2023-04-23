@@ -57,6 +57,8 @@ function App() {
     setTodos([...todos, newTodo]);
   };
 
+  console.log(todos);
+
   const handleAddTodoInput = (e) => setAddTodoInput(e.target.value);
 
   return (
