@@ -93,9 +93,10 @@ class FirebaseStorageHandler extends AbstractStorageHandler {
     const docSnap = await getDoc(docRef);
     const todo = docSnap.data();
     if (docSnap.exists()) {
+      return todo;
     } else {
+      throw new Error("No such document!");
     }
-    return todo;
   }
 
   updateTodo(id, newTodo) {
