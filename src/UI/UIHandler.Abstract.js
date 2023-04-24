@@ -1,4 +1,4 @@
-class UIHandler {
+class UIHandlerAbstract {
   #name = {};
 
   constructor(app) {
@@ -8,13 +8,13 @@ class UIHandler {
     this.editedElementId = null;
 
     this.#name = {
-      addButton: { id: "add-todo", tag: "button" },
-      todoList: { id: "todos", tag: "ul" },
-      todoInput: { id: "new-todo", tag: "input" },
-      editInput: { id: "edit-todo", tag: "input" },
-      editModal: { id: "edit-modal", tag: "div" },
-      saveTodo: { id: "save-todo", tag: "button" },
-      cancelEdit: { id: "cancel-edit-todo", tag: "button" },
+      addButton: {id: "add-todo", tag: "button"},
+      todoList: {id: "todos", tag: "ul"},
+      todoInput: {id: "new-todo", tag: "input"},
+      editInput: {id: "edit-todo", tag: "input"},
+      editModal: {id: "edit-modal", tag: "div"},
+      saveTodo: {id: "save-todo", tag: "button"},
+      cancelEdit: {id: "cancel-edit-todo", tag: "button"},
     };
 
     this.elements = Object.entries(this.#name).reduce((acc, [key, value]) => {
@@ -52,8 +52,8 @@ class UIHandler {
   renderTodoList() {
     this.initInputField();
     this.clearTodoList();
-    const todos = this.app.storage.getAllTodos()
-    console.log(todos)
+    const todos = this.app.storage.getAllTodos();
+    console.log(todos);
     todos.forEach((todoElem) => {
       this.renderTodos(todoElem);
     });
@@ -61,7 +61,7 @@ class UIHandler {
 
   createElement(
     tag,
-    { id, insterBefore, className, textContent, parent, data, event }
+    {id, insterBefore, className, textContent, parent, data, event}
   ) {
     const elem = document.createElement(tag);
     if (id) elem.id = id;
@@ -81,10 +81,11 @@ class UIHandler {
     );
   }
 
-  createButton(text, eventHandler, parent) {
+  createButton(textContent, event, parent, className = "") {
     const button = this.createElement("button", {
-      textContent: text,
-      event: eventHandler,
+      textContent,
+      event,
+      className,
     });
     parent.appendChild(button);
   }
@@ -95,19 +96,19 @@ class UIHandler {
       this.app.setDoneTodo(todoId);
     };
 
-    this.createButton("Complete", { type: "click", cb }, parent);
+    this.createButton("Complete", {type: "click", cb}, parent, "complete-btn");
   }
 
   createEditButton(parent, todoElem) {
     const cb = () => {
       this.elements.editModal.parentElement.classList.remove("hidden");
       this.editedElementId = todoElem.id;
-      const todoCard = this.elements.todoList.querySelector('#' + todoElem.id)
-      const todoContent = todoCard.querySelector('p').textContent
-      this.elements.editInput.value = todoContent ?? '';
+      const todoCard = this.elements.todoList.querySelector("#" + todoElem.id);
+      const todoContent = todoCard.querySelector("p").textContent;
+      this.elements.editInput.value = todoContent ?? "";
     };
 
-    this.createButton("Edit", { type: "click", cb }, parent);
+    this.createButton("Edit", {type: "click", cb}, parent, "edit-btn");
   }
 
   createDeleteButton(parent, todoElem) {
@@ -116,12 +117,12 @@ class UIHandler {
       this.app.removeTodo(todoId);
     };
 
-    this.createButton("Delete", { type: "click", cb }, parent);
+    this.createButton("Delete", {type: "click", cb}, parent, "delete-btn");
   }
 
   handleAddButton() {
     this.elements.addButton.addEventListener("click", () => {
-      this.app.createNewTodo(this.todoText);
+      this.todoText && this.app.createNewTodo(this.todoText);
     });
   }
 
@@ -137,11 +138,10 @@ class UIHandler {
     this.elements.cancelEdit.addEventListener("click", () => {
       this.elements.editModal.parentElement.classList.add("hidden");
       this.elements.editInput.value = "";
-
     });
   }
 
-  renderTodos = ({ id, content, time, active }) => {
+  renderTodos = ({id, content, time, active}) => {
     const todoElem = this.createElement("li", {
       className: "todo-item",
       parent: this.elements.todoList,
@@ -168,4 +168,4 @@ class UIHandler {
   };
 }
 
-export default UIHandler;
+export default UIHandlerAbstract;

@@ -1,6 +1,8 @@
-class LocalStorageHandler {
+import AbstractStorageHandler from "./StorageHandler.Abstract.js";
+
+class LocalStorageHandler extends AbstractStorageHandler {
   constructor(app) {
-    this.app = app;
+    super(app);
     this.storage = window.localStorage;
   }
 
@@ -27,22 +29,22 @@ class LocalStorageHandler {
 
   getOneTodo(id) {
     const todos = this.getAllTodos();
-    return todos.find(todo => todo.id === id);
+    return todos.find((todo) => todo.id === id);
   }
 
   updateTodo(id, newTodo) {
     const oldTodo = this.getOneTodo(id);
     if (!oldTodo) throw new Error("Todo not found!");
     const oldTodos = this.getAllTodos();
-    const newTodos = oldTodos.map(todo => todo.id === id
-      ? { ...todo, ...newTodo }
-      : todo);
+    const newTodos = oldTodos.map((todo) =>
+      todo.id === id ? {...todo, ...newTodo} : todo
+    );
     this.saveToStorage(newTodos);
   }
 
   deleteTodo(id) {
     const todos = this.getAllTodos();
-    const newTodos = todos.filter(todo => todo.id !== id);
+    const newTodos = todos.filter((todo) => todo.id !== id);
     this.saveToStorage(newTodos);
   }
 }
