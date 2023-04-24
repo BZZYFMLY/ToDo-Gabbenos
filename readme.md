@@ -24,6 +24,5 @@ const app = new ToDoApp({
 });
 ```
 
-
-Contribution
+## Contribution
 Contributions to this project are always welcome. Feel free to submit any issues or pull requests.
