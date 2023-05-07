@@ -9,12 +9,12 @@ import {postMethod} from "../../api/methods";
 const baseURL = backendURL.local;
 
 const TodoCard = ({todo, setTodos}) => {
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editContent, setEditContent] = useState("");
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [editContent, setEditContent] = useState(todo.content ?? "");
 
-  const handleDelete = (e) => {
-    const {id} = e.target.dataset;
-    console.log(id);
+  const handleDelete = () => {
+    const {id} = todo;
     fetch(baseURL + endpoints.deleteTodo, {
       ...postMethod,
       body: JSON.stringify({id}),
@@ -26,16 +26,17 @@ const TodoCard = ({todo, setTodos}) => {
   };
 
   const handledit = () => {
-    console.log("edit");
+    setEditModalOpen(true);
   };
 
-  const handleDone = (e) => {
-    const {id} = e.target.dataset;
-    const todoToUpdate = todos.find((todo) => todo.id === id);
+  const handleConfirmDelete = () => {
+    setDeleteModalOpen(true);
+  };
 
+  const handleDone = () => {
     fetch(baseURL + endpoints.updateTodo, {
       ...postMethod,
-      body: JSON.stringify({...todoToUpdate, done: !todoToUpdate.done}),
+      body: JSON.stringify({...todo, done: !todo.done}),
     })
       .then((res) => res.json())
       .then((data) => {
@@ -45,14 +46,15 @@ const TodoCard = ({todo, setTodos}) => {
 
   const handleEditContent = (e) => setEditContent(e.target.value);
 
-  const handleSave = () => {
-    setTodos((prev) => {
-      return prev.map((todoFromList) => {
-        return todoFromList.id === todo.id
-          ? {...todoFromList, content: editContent}
-          : todoFromList;
+  const handleSaveUpdate = () => {
+    fetch(baseURL + endpoints.updateTodo, {
+      ...postMethod,
+      body: JSON.stringify({...todo, content: editContent}),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setTodos(data ?? []);
       });
-    });
   };
 
   return (
@@ -62,24 +64,33 @@ const TodoCard = ({todo, setTodos}) => {
         <p>{todo?.done ? "Completed" : "Not Completed"}</p>
         <p>{todo?.date}</p>
         <p>{todo?.id}</p>
-        <button onClick={handleDelete}>Delete</button>
+        <button onClick={handleConfirmDelete}>Delete</button>
         <button onClick={handledit}>Edit</button>
         <button onClick={handleDone}>Done</button>
       </li>
       <Modal
-        handleOk={handleSave}
-        open={modalOpen}
-        setOpen={setModalOpen}
+        handleOk={handleSaveUpdate}
+        open={editModalOpen}
+        setOpen={setEditModalOpen}
         title="Edit todo"
+        okButtonText="Save"
       >
         <label htmlFor="editContent">Todo content</label>
         <input
           type="text"
           name="editContent"
           placeholder="Add the new content"
+          value={editContent}
           onInput={handleEditContent}
         />
       </Modal>
+      <Modal
+        handleOk={handleDelete}
+        okButtonText="Delete"
+        open={deleteModalOpen}
+        setOpen={setDeleteModalOpen}
+        title="Do you want to delete this todo?"
+      />
     </>
   );
 };
