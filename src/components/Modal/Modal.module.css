@@ -61,23 +61,3 @@
   align-items: center;
   gap: 1rem;
 }
-
-.btn {
-  border: none;
-  cursor: pointer;
-  font-size: 1rem;
-  background-color: transparent;
-  font-weight: bold;
-  border-radius: 0.5rem;
-  padding: 0.5rem 1rem;
-}
-
-.footerCancel {
-  composes: btn;
-  background-color: rgba(255,0,0,.5);
-}
-
-.footerOk {
-  composes: btn;
-  background-color: rgba(0,255,0,.5);
-}
