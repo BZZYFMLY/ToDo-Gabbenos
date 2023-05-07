@@ -22,8 +22,8 @@ function App() {
 
   return (
     <Fragment>
-      <h1> Hello World! </h1>
-      <h2> Add Todo </h2>
+      <h1>Todo-Gabbenos!</h1>
+      <h2>Add Todo</h2>
       <AddTodoForm setTodos={setTodos} />
       <h2> Todos </h2>
       {todos.length > 0 ? (
