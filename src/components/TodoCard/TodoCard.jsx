@@ -6,6 +6,8 @@ import {endpoints} from "../../api/endpoints";
 import {backendURL} from "../../api/backendURL";
 import {postMethod} from "../../api/methods";
 
+import style from "./TodoCard.module.css";
+
 const baseURL = backendURL.local;
 
 const TodoCard = ({todo, setTodos}) => {
@@ -57,16 +59,39 @@ const TodoCard = ({todo, setTodos}) => {
       });
   };
 
+  const dateTime = new Date(todo?.date);
+  const date = dateTime.toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+  const time = dateTime.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "numeric",
+    hour12: false,
+  });
+
   return (
     <>
-      <li>
-        <h2>{todo?.content}</h2>
-        <p>{todo?.done ? "Completed" : "Not Completed"}</p>
-        <p>{todo?.date}</p>
-        <p>{todo?.id}</p>
-        <button onClick={handleConfirmDelete}>Delete</button>
-        <button onClick={handledit}>Edit</button>
-        <button onClick={handleDone}>Done</button>
+      <li className={style.card}>
+        <div className={style.todoContent}>
+          <h2>{todo?.content}</h2>
+          <p>{todo?.done ? "Completed" : "Not Completed"}</p>
+          <p>{date}</p>
+          <p>{time}</p>
+        </div>
+        <div className={style.todoCardButtons}>
+          <button onClick={handleConfirmDelete} className="btn-danger">
+            Delete
+          </button>
+          <button onClick={handledit} className="btn-success">
+            Edit
+          </button>
+          <button onClick={handleDone} className="btn-warning">
+            Done
+          </button>
+        </div>
       </li>
       <Modal
         handleOk={handleSaveUpdate}
