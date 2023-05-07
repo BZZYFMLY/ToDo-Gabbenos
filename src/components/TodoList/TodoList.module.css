@@ -1,5 +1,9 @@
 .todoList {
+  padding: 2rem;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
+  width: 80%;
+  margin: 0 auto;
+  gap: 2rem;
+  grid-template-rows: auto;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
 }
