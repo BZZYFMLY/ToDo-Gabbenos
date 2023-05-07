@@ -1,6 +1,6 @@
 import {Fragment, useState, useEffect} from "react";
 
-import TodoLost from "./components/TodoList/TodoList";
+import TodoList from "./components/TodoList/TodoList";
 import AddTodoForm from "./components/AddTodoForm/AddTodoForm";
 
 import {endpoints} from "./api/endpoints";
@@ -25,7 +25,7 @@ function App() {
       <AddTodoForm setTodos={setTodos} />
       <h2> Todos </h2>
       {todos.length > 0 ? (
-        <TodoLost todos={todos} setTodos={setTodos} />
+        <TodoList todos={todos} setTodos={setTodos} />
       ) : (
         <p>No Todos</p>
       )}
