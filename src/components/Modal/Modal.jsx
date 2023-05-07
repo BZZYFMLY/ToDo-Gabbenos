@@ -2,7 +2,15 @@ import {useState} from "react";
 
 import style from "./Modal.module.css";
 
-const Modal = ({open, setOpen, title, children, handleOk, handleCancel}) => {
+const Modal = ({
+  open,
+  setOpen,
+  title,
+  children,
+  handleOk,
+  okButtonText,
+  handleCancel,
+}) => {
   if (open === false) return <></>;
 
   return (
@@ -23,7 +31,7 @@ const Modal = ({open, setOpen, title, children, handleOk, handleCancel}) => {
               setOpen(false);
             }}
           >
-            Save
+            {okButtonText}
           </button>
           <button
             className={style.footerCancel}
