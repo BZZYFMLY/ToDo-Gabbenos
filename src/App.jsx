@@ -1,34 +1,16 @@
 import {Fragment, useState, useEffect} from "react";
-import {v4 as uuidv4} from "uuid";
 
+import TodoLost from "./components/TodoList/TodoList";
+import AddTodoForm from "./components/AddTodoForm/AddTodoForm";
 
-const backendURL = {
-  remote: "https://todo-gabbenos-api.fly.dev",
-  local: "http://localhost:8080",
-};
+import {endpoints} from "./api/endpoints";
+import {backendURL} from "./api/backendURL";
+import {getMethod, postMethod} from "./api/methods";
 
 const baseURL = backendURL.local;
 
-const endpoints = {
-  todos: "/gettodos",
-  addTodo: "/addtodo",
-  deleteTodo: "/deletetodo",
-  updateTodo: "/updatetodo",
-};
-const requestHeaders = {
-  "Content-Type": "application/json",
-};
-
-const postMethod = {
-  method: "POST",
-  headers: requestHeaders,
-};
-
-const getMethod = {method: "GET", headers: requestHeaders};
-
 function App() {
   const [todos, setTodos] = useState([]);
-  const [addTodoInput, setAddTodoInput] = useState("");
 
   useEffect(() => {
     fetch(baseURL + endpoints.todos, getMethod)
@@ -36,98 +18,17 @@ function App() {
       .then((data) => setTodos(data ?? []));
   }, []);
 
-  const handleDelete = (e) => {
-    const {id} = e.target.dataset;
-    console.log(id);
-    fetch(baseURL + endpoints.deleteTodo, {
-      ...postMethod,
-      body: JSON.stringify({id}),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setTodos(data ?? []);
-      });
-  };
-
-  const handledit = () => {
-    console.log("edit");
-  };
-
-  const handleDone = (e) => {
-    const {id} = e.target.dataset;
-    const todoToUpdate = todos.find((todo) => todo.id === id);
-
-    fetch(baseURL + endpoints.updateTodo, {
-      ...postMethod,
-      body: JSON.stringify({...todoToUpdate, done: !todoToUpdate.done}),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setTodos(data ?? []);
-      });
-  };
-
-  const handleAddSubmit = (e) => {
-    e.preventDefault();
-    const date = new Date();
-    const newTodo = {
-      content: addTodoInput,
-      done: false,
-      date: date.toISOString(),
-      id: uuidv4(),
-    };
-    console.log(addTodoInput);
-    fetch(baseURL + endpoints.addTodo, {
-      ...postMethod,
-      body: JSON.stringify(newTodo),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setTodos(data ?? []);
-      });
-  };
-
-  const handleAddTodoInput = (e) => setAddTodoInput(e.target.value);
-
   return (
     <Fragment>
       <h1> Hello World! </h1>
       <h2> Add Todo </h2>
-      <form onSubmit={handleAddSubmit}>
-        <input
-          type="text"
-          value={addTodoInput}
-          onChange={handleAddTodoInput}
-          placeholder="Add Todo"
-        />
-        <button type="submit">Add</button>
-      </form>
+      <AddTodoForm setTodos={setTodos} />
       <h2> Todos </h2>
-      <ul>
-        {todos.length > 0 ? (
-          todos.map(
-            (todo) =>
-              todo && (
-                <li key={todo.id}>
-                  <h2>{todo.content}</h2>
-                  <p>{todo.done ? "Completed" : "Not Completed"}</p>
-                  <p>{todo.date}</p>
-                  <button data-id={todo.id} onClick={handleDelete}>
-                    Delete
-                  </button>
-                  <button data-id={todo.id} onClick={handledit}>
-                    Edit
-                  </button>
-                  <button data-id={todo.id} onClick={handleDone}>
-                    Done
-                  </button>
-                </li>
-              )
-          )
-        ) : (
-          <p>No Todos</p>
-        )}
-      </ul>
+      {todos.length > 0 ? (
+        <TodoLost todos={todos} setTodos={setTodos} />
+      ) : (
+        <p>No Todos</p>
+      )}
     </Fragment>
   );
 }
