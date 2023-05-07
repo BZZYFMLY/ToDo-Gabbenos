@@ -5,7 +5,9 @@ import AddTodoForm from "./components/AddTodoForm/AddTodoForm";
 
 import {endpoints} from "./api/endpoints";
 import {backendURL} from "./api/backendURL";
-import {getMethod, postMethod} from "./api/methods";
+import {getMethod} from "./api/methods";
+
+import "./App.css";
 
 const baseURL = backendURL.local;
 
