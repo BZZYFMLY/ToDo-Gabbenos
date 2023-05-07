@@ -34,6 +34,7 @@
 
 .modalTitle {
   margin: 0;
+  margin-right: 0.5rem;
 }
 
 .closeModal {
@@ -58,22 +59,25 @@
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  gap: 1rem;
+}
+
+.btn {
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  background-color: transparent;
+  font-weight: bold;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
 }
 
 .footerCancel {
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 1rem;
-  color: red;
-  font-weight: bold;
+  composes: btn;
+  background-color: rgba(255,0,0,.5);
 }
 
 .footerOk {
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 1rem;
-  color: Green;
-  font-weight: bold;
+  composes: btn;
+  background-color: rgba(0,255,0,.5);
 }
