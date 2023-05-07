@@ -1,95 +1,37 @@
 import {Fragment, useState, useEffect} from "react";
-import {v4 as uuidv4} from "uuid";
 
-const baseURL = "https://todo-gabbenos-api.fly.dev";
-
-const endpoints = {
-  todos: "/gettodos",
-  addTodo: "/addtodo",
-  deleteTodo: "/deletetodos",
-  updateTodo: "/updatetodos",
-};
-const requestHeaders = {
-  "Content-Type": "application/json",
-};
-
-const postMethod = {
-  method: "POST",
-  headers: requestHeaders,
-};
+import TodoList from "./components/TodoList/TodoList";
+import AddTodoForm from "./components/AddTodoForm/AddTodoForm";
 
 function App() {
-  const [todos, setTodos] = useState([]);
-  const [addTodoInput, setAddTodoInput] = useState("");
-
-  useEffect(() => {
-    fetch(baseURL + endpoints.todos, postMethod)
-      .then((res) => res.json())
-      .then((data) => setTodos(data.filter((todo) => !!todo)));
-  }, []);
-
-  const handleDelete = () => {
-    console.log("delete");
-  };
-
-  const handledit = () => {
-    console.log("edit");
-  };
-
-  const handleDone = () => {
-    console.log("done");
-  };
-
-  const handleAddSubmit = (e) => {
-    e.preventDefault();
-    const date = new Date();
-    const newTodo = {
-      content: addTodoInput,
+  const [todos, setTodos] = useState([
+    {
+      content: "test",
       done: false,
-      date: date.toISOString(),
-      id: uuidv4(),
-    };
-    console.log(addTodoInput);
-    fetch(baseURL + endpoints.addTodo, {
-      ...postMethod,
-      body: JSON.stringify(newTodo),
-    }).then((res) => res.json());
-    setTodos([...todos, newTodo]);
-  };
+      date: "2021-09-01T15:00:00.000Z",
+      id: "1",
+    },
+    {
+      content: "test2",
+      done: false,
+      date: "2021-09-01T15:00:00.000Z",
+      id: "2",
+    },
+  ]);
 
-  console.log(todos);
-
-  const handleAddTodoInput = (e) => setAddTodoInput(e.target.value);
+  // useEffect(() => {
+  //   fetch(baseURL + endpoints.todos, postMethod)
+  //     .then((res) => res.json())
+  //     .then((data) => setTodos(data.filter((todo) => !!todo)));
+  // }, []);
 
   return (
     <Fragment>
       <h1> Hello World! </h1>
       <h2> Add Todo </h2>
-      <form onSubmit={handleAddSubmit}>
-        <input
-          type="text"
-          value={addTodoInput}
-          onChange={handleAddTodoInput}
-          placeholder="Add Todo"
-        />
-        <button type="submit">Add</button>
-      </form>
+      <AddTodoForm todos={todos} setTodos={setTodos} />
       <h2> Todos </h2>
-      <ul>
-        {todos.map(
-          (todo) =>
-            todo && (
-              <li key={todo.id}>
-                <h2>{todo.content}</h2>
-                <p>{todo.done ? "Completed" : "Not Completed"}</p>
-                <p>{todo.date}</p>
-                <button onClick={handleDelete}>Delete</button>
-                <button onClick={handledit}>Edit</button>
-                <button onClick={handleDone}>Done</button>
-              </li>
-            )
-        )}
-      </ul>
+      <TodoList todos={todos} setTodos={setTodos} />
     </Fragment>
   );
 }
