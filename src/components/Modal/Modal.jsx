@@ -25,7 +25,7 @@ const Modal = ({
         <div className={style.modalBody}>{children}</div>
         <div className={style.modalFooter}>
           <button
-            className={style.footerOk}
+            className="btn-success"
             onClick={() => {
               handleOk && handleOk();
               setOpen(false);
@@ -34,7 +34,7 @@ const Modal = ({
             {okButtonText}
           </button>
           <button
-            className={style.footerCancel}
+            className="btn-danger"
             onClick={() => {
               handleCancel && handleCancel();
               setOpen(false);
