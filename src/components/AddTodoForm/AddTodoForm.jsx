@@ -37,11 +37,14 @@ const AddTodoFrom = ({todos, setTodos}) => {
       <input
         type="text"
         name="addTodoInput"
+        className="noRadiusRight"
         value={addTodoInput}
         onChange={handleAddTodoInput}
         placeholder="Add Todo"
       />
-      <button type="submit">Add</button>
+      <button type="submit" className="btn-primary noRadiusLeft">
+        Add
+      </button>
     </form>
   );
 };
