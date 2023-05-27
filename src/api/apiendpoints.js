@@ -1,6 +1,6 @@
 export const apiEndpoints = {
   todos: "/gettodos",
   addTodo: "/addtodo",
-  deleteTodo: "/deletetodos",
+  deleteTodo: "/deletetodo",
   updateTodo: "/updatetodo",
 };
