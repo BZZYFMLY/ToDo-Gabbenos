@@ -1,0 +1,47 @@
+.todoCard {
+  padding: 1rem 2rem;
+  background-color: #eee;
+  margin: 1rem;
+  list-style: none;
+  border-radius: 1rem;
+  box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.2);
+  max-width: 20rem;
+}
+
+.cardTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #00f;
+}
+
+.activeTodo {
+  text-decoration: none;
+  color: #000;
+}
+
+.passiveTodo {
+  text-decoration: line-through;
+  color: #333;
+}
+
+.urgentTodo {
+  color: #f00;
+}
+
+.btnContainer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+
+.btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 600;
+  color: #000;
+  background-color: #fff;
+  box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.2);
+}
