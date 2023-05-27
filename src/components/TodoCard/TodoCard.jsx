@@ -16,7 +16,11 @@ const TodoCard = ({todo}) => {
   const [editContent, setEditContent] = useState("");
 
   const handleDelete = () => {
-    fetch(baseURL + apiEndpoints.deleteTodo, {...postMethod, body: todo.id})
+    console.log("delete", JSON.stringify(todo.id));
+    fetch(baseURL + apiEndpoints.deleteTodo, {
+      ...postMethod,
+      body: JSON.stringify({id: todo.id}),
+    })
       .then((res) => res.json())
       .then((data) => setTodos(data));
   };
