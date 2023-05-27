@@ -1,38 +1,31 @@
-import {Fragment, useState, useEffect} from "react";
+import {useState, useEffect, createContext} from "react";
 
 import TodoList from "./components/TodoList/TodoList";
 import AddTodoForm from "./components/AddTodoForm/AddTodoForm";
+import {baseURLLocal, baseURLRemote} from "./api/apiURLs";
+import {apiEndpoints} from "./api/apiEndpoints";
+import {getMethod} from "./api/apiMethods";
+
+const baseURL = baseURLLocal;
+
+export const TodoContext = createContext();
 
 function App() {
-  const [todos, setTodos] = useState([
-    {
-      content: "test",
-      done: false,
-      date: "2021-09-01T15:00:00.000Z",
-      id: "1",
-    },
-    {
-      content: "test2",
-      done: false,
-      date: "2021-09-01T15:00:00.000Z",
-      id: "2",
-    },
-  ]);
+  const [todos, setTodos] = useState([]);
 
-  // useEffect(() => {
-  //   fetch(baseURL + endpoints.todos, postMethod)
-  //     .then((res) => res.json())
-  //     .then((data) => setTodos(data.filter((todo) => !!todo)));
-  // }, []);
+  useEffect(() => {
+    fetch(baseURL + apiEndpoints.todos, getMethod)
+      .then((res) => res.json())
+      .then((data) => setTodos(data.filter((todo) => !!todo)));
+  }, []);
 
   return (
-    <Fragment>
-      <h1> Hello World! </h1>
-      <h2> Add Todo </h2>
-      <AddTodoForm todos={todos} setTodos={setTodos} />
-      <h2> Todos </h2>
-      <TodoList todos={todos} setTodos={setTodos} />
-    </Fragment>
+    <TodoContext.Provider value={{todos, setTodos, baseURL}}>
+      <h1>Todo App Made with React</h1>
+      <h2>Add Todo</h2>
+      <AddTodoForm />
+      <TodoList />
+    </TodoContext.Provider>
   );
 }
 
