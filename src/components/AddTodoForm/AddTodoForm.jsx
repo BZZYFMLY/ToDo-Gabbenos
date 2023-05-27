@@ -1,7 +1,14 @@
-import React, {useState} from "react";
+import React, {useState, useContext} from "react";
 import {v4 as uuidv4} from "uuid";
+import {baseURLLocal} from "../../api/apiURLs";
+import {apiEndpoints} from "../../api/apiEndpoints";
+import {postMethod} from "../../api/apiMethods";
 
-const AddTodoFrom = ({todos, setTodos}) => {
+import {TodoContext} from "../../App";
+
+const AddTodoFrom = () => {
+  const {setTodos, baseURL} = useContext(TodoContext);
+
   const [addTodoInput, setAddTodoInput] = useState("");
 
   const handleAddTodoInput = (e) => setAddTodoInput(e.target.value);
@@ -15,11 +22,12 @@ const AddTodoFrom = ({todos, setTodos}) => {
       date: date.toISOString(),
       id: uuidv4(),
     };
-    // fetch(baseURL + endpoints.addTodo, {
-    //   ...postMethod,
-    //   body: JSON.stringify(newTodo),
-    // }).then((res) => res.json());
-    setTodos([...todos, newTodo]);
+    fetch(baseURL + apiEndpoints.addTodo, {
+      ...postMethod,
+      body: JSON.stringify(newTodo),
+    })
+      .then((res) => res.json())
+      .then((data) => setTodos(data));
     setAddTodoInput("");
   };
 
