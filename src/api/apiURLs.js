@@ -1,2 +1,2 @@
-export const baseURLRemote = "https://todo-gabbenos-api.fly.dev";
-export const baseURLLocal = "https://localhost:8080";
+export const baseURLRemote = "http://todo-gabbenos-api.fly.dev";
+export const baseURLLocal = "http://localhost:8080";
