@@ -1,0 +1,12 @@
+.listTitle {
+  text-align: center;
+}
+
+.todoList {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  padding: 0rem 2rem;
+}
